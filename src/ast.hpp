@@ -1,4 +1,5 @@
 #pragma once
+#include "koopa.h"
 #include <iostream>
 #include <memory>
 #include <string>
@@ -16,6 +17,7 @@ class BaseAST {
 public:
   virtual ~BaseAST() = default;
   virtual void Dump(int indent = 0) const = 0;
+  virtual void KoopaIR() const = 0;
 };
 
 class CompUnitAST : public BaseAST {
@@ -29,6 +31,11 @@ public:
     std::cout << std::string(indent, '\t') << "CompUnit {" << std::endl;
     func_def->Dump(indent + 1);
     std::cout << std::string(indent, '\t') << "}" << std::endl;
+  }
+
+  void KoopaIR() const override {
+    std::cout << "fun ";
+    func_def->KoopaIR();
   }
 };
 
@@ -51,6 +58,12 @@ public:
     block->Dump(indent + 1);
     std::cout << std::string(indent, '\t') << "}" << std::endl;
   }
+
+  void KoopaIR() const override {
+    std::cout << "@" << ident << "():";
+    func_type->KoopaIR();
+    block->KoopaIR();
+  }
 };
 
 class FuncTypeAST : public BaseAST {
@@ -62,6 +75,8 @@ public:
   void Dump(int indent = 0) const override {
     std::cout << std::string(indent, '\t') << "FuncType: " << type << std::endl;
   }
+
+  void KoopaIR() const override { std::cout << " i32 "; }
 };
 
 class BlockAST : public BaseAST {
@@ -74,6 +89,13 @@ public:
     std::cout << std::string(indent, '\t') << "Block {" << std::endl;
     stmt->Dump(indent + 1);
     std::cout << std::string(indent, '\t') << "}" << std::endl;
+  }
+
+  void KoopaIR() const override {
+    std::cout << "{" << std::endl;
+    std::cout << "%entry:" << std::endl;
+    stmt->KoopaIR();
+    std::cout << "}";
   }
 };
 
@@ -88,6 +110,11 @@ public:
     number->Dump(indent + 1);
     std::cout << std::string(indent, '\t') << "}" << std::endl;
   }
+
+  void KoopaIR() const override {
+    std::cout << " ret ";
+    number->KoopaIR();
+  }
 };
 
 class NumberAST : public BaseAST {
@@ -99,4 +126,6 @@ public:
   void Dump(int indent = 0) const override {
     std::cout << std::string(indent, '\t') << val << ", " << std::endl;
   }
+
+  void KoopaIR() const override { std::cout << val << std::endl; }
 };

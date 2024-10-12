@@ -1,9 +1,10 @@
 #include "ast.hpp"
 #include <cassert>
 #include <cstdio>
+#include <fstream>
 #include <iostream>
 #include <memory>
-#include <string>
+#include <streambuf>
 
 using namespace std;
 
@@ -18,22 +19,37 @@ extern int yyparse(unique_ptr<BaseAST> &ast);
 int main(int argc, const char *argv[]) {
   // 解析命令行参数. 测试脚本/评测平台要求你的编译器能接收如下参数:
   // compiler 模式 输入文件 -o 输出文件
-  // build/compiler -koopa hello.c -o hello hello.koopa
+  // build/compiler -koopa ./test/hello.c -o hello.koopa
   assert(argc == 5);
   // auto mode = argv[1];
   auto input = argv[2];
-  // auto output = argv[4];
+  auto output = argv[4];
 
   // 打开输入文件, 并且指定 lexer 在解析的时候读取这个文件
   yyin = fopen(input, "r");
   assert(yyin);
+
+  // 打开输出文件
+  ofstream outputfile(output);
+  assert(outputfile);
+
+  // 将标准输出重新定向到输出文件
+  std::streambuf *coutbuf = std::cout.rdbuf(); // 保存旧的cout buffer
+  std::cout.rdbuf(outputfile.rdbuf());         // 将 cout 重定向到文件
 
   // 调用 parser 函数, parser 函数会进一步调用 lexer 解析输入文件的
   unique_ptr<BaseAST> ast;
   auto ret = yyparse(ast);
   assert(!ret);
 
-  ast->Dump();
+  ast->KoopaIR();
+
+  // 恢复标准输出
+  std::cout.rdbuf(coutbuf);
+
+  // 关闭文件
+  fclose(yyin);
+  outputfile.close();
 
   return 0;
 }
