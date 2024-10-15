@@ -1,10 +1,11 @@
 #include "ast.hpp"
+#include "ir.hpp"
 #include <cassert>
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <koopa.h>
 #include <memory>
-#include <streambuf>
 
 using namespace std;
 
@@ -21,7 +22,7 @@ int main(int argc, const char *argv[]) {
   // compiler 模式 输入文件 -o 输出文件
   // build/compiler -koopa ./test/hello.c -o hello.koopa
   assert(argc == 5);
-  // auto mode = argv[1];
+  auto mode = argv[1];
   auto input = argv[2];
   auto output = argv[4];
 
@@ -33,19 +34,33 @@ int main(int argc, const char *argv[]) {
   ofstream outputfile(output);
   assert(outputfile);
 
-  // 将标准输出重新定向到输出文件
-  std::streambuf *coutbuf = std::cout.rdbuf(); // 保存旧的cout buffer
-  std::cout.rdbuf(outputfile.rdbuf());         // 将 cout 重定向到文件
-
   // 调用 parser 函数, parser 函数会进一步调用 lexer 解析输入文件的
   unique_ptr<BaseAST> ast;
-  auto ret = yyparse(ast);
-  assert(!ret);
+  auto ast_ret = yyparse(ast);
+  assert(!ast_ret);
 
-  ast->KoopaIR();
+  std::string koopairString = ast->KoopaIR();
 
-  // 恢复标准输出
-  std::cout.rdbuf(coutbuf);
+  if (std::string(mode) == "-koopa") {
+    outputfile << koopairString;
+  } else if (std::string(mode) == "-riscv") {
+    koopa_program_t program;
+    koopa_error_code_t ret =
+        koopa_parse_from_string(koopairString.c_str(), &program);
+    assert(ret == KOOPA_EC_SUCCESS);
+    koopa_raw_program_builder_t builder = koopa_new_raw_program_builder();
+    koopa_raw_program_t raw = koopa_build_raw_program(builder, program);
+
+    std::string riscvASM = Visit(raw);
+    outputfile << riscvASM;
+
+    koopa_delete_program(program);
+    koopa_delete_raw_program_builder(builder);
+
+  } else {
+    std::cerr << "Unknown mode: " << mode << std::endl;
+    return 1;
+  }
 
   // 关闭文件
   fclose(yyin);

@@ -1,5 +1,4 @@
 #pragma once
-#include "koopa.h"
 #include <iostream>
 #include <memory>
 #include <string>
@@ -17,7 +16,7 @@ class BaseAST {
 public:
   virtual ~BaseAST() = default;
   virtual void Dump(int indent = 0) const = 0;
-  virtual void KoopaIR() const = 0;
+  virtual std::string KoopaIR() const = 0;
 };
 
 class CompUnitAST : public BaseAST {
@@ -33,9 +32,10 @@ public:
     std::cout << std::string(indent, '\t') << "}" << std::endl;
   }
 
-  void KoopaIR() const override {
-    std::cout << "fun ";
-    func_def->KoopaIR();
+  std::string KoopaIR() const override {
+    std::string result = "fun ";
+    result += func_def->KoopaIR();
+    return result;
   }
 };
 
@@ -59,10 +59,11 @@ public:
     std::cout << std::string(indent, '\t') << "}" << std::endl;
   }
 
-  void KoopaIR() const override {
-    std::cout << "@" << ident << "():";
-    func_type->KoopaIR();
-    block->KoopaIR();
+  std::string KoopaIR() const override {
+    std::string result = "@" + ident + "():";
+    result += func_type->KoopaIR();
+    result += block->KoopaIR();
+    return result;
   }
 };
 
@@ -76,7 +77,7 @@ public:
     std::cout << std::string(indent, '\t') << "FuncType: " << type << std::endl;
   }
 
-  void KoopaIR() const override { std::cout << " i32 "; }
+  std::string KoopaIR() const override { return " i32 "; }
 };
 
 class BlockAST : public BaseAST {
@@ -91,11 +92,11 @@ public:
     std::cout << std::string(indent, '\t') << "}" << std::endl;
   }
 
-  void KoopaIR() const override {
-    std::cout << "{" << std::endl;
-    std::cout << "%entry:" << std::endl;
-    stmt->KoopaIR();
-    std::cout << "}";
+  std::string KoopaIR() const override {
+    std::string result = "{\n%entry:\n";
+    result += stmt->KoopaIR();
+    result += "}";
+    return result;
   }
 };
 
@@ -111,9 +112,10 @@ public:
     std::cout << std::string(indent, '\t') << "}" << std::endl;
   }
 
-  void KoopaIR() const override {
-    std::cout << " ret ";
-    number->KoopaIR();
+  std::string KoopaIR() const override {
+    std::string result = " ret ";
+    result += number->KoopaIR() + "\n";
+    return result;
   }
 };
 
@@ -127,5 +129,5 @@ public:
     std::cout << std::string(indent, '\t') << val << ", " << std::endl;
   }
 
-  void KoopaIR() const override { std::cout << val << std::endl; }
+  std::string KoopaIR() const override { return std::to_string(val); }
 };
