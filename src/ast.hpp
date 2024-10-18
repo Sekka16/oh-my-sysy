@@ -2,14 +2,21 @@
 #include <memory>
 #include <string>
 
-// CompUnit  ::= FuncDef;
+// CompUnit    ::= FuncDef;
 //
-// FuncDef   ::= FuncType IDENT "(" ")" Block;
-// FuncType  ::= "int";
+// FuncDef     ::= FuncType IDENT "(" ")" Block;
+// FuncType    ::= "int";
 //
-// Block     ::= "{" Stmt "}";
-// Stmt      ::= "return" Number ";";
-// Number    ::= INT_CONST;
+// Block       ::= "{" Stmt "}";
+// Stmt        ::= "return" Exp ";";
+//
+// Exp         ::= UnaryExp;
+// PrimaryExp  ::= "(" Exp ")" | Number;
+// Number      ::= INT_CONST;
+// UnaryExp    ::= PrimaryExp | UnaryOp UnaryExp;
+// UnaryOp     ::= "+" | "-" | "!";
+
+enum class UnaryOpType { PLUS, MINUS, NOT };
 
 class BaseAST {
 public:
@@ -77,6 +84,23 @@ public:
   void Dump(int indent = 0) const override;
 
   std::string KoopaIR() const override;
+};
+
+class ExpAST : public BaseAST {
+public:
+  std::unique_ptr<BaseAST> unary_exp;
+
+  ExpAST(std::unique_ptr<BaseAST> &unary_exp)
+      : unary_exp(std::move(unary_exp)) {}
+
+  void Dump(int ident = 0) const override;
+
+  std::string KoopaIR() const override;
+};
+
+class PrimaryExp : public BaseAST {
+public:
+  std::unique_ptr<BaseAST> expr;
 };
 
 class NumberAST : public BaseAST {
