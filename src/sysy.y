@@ -16,6 +16,20 @@ void yyerror(std::unique_ptr<BaseAST> &ast, const char *s);
 
 %}
 
+// CompUnit    ::= FuncDef;
+// 
+// FuncDef     ::= FuncType IDENT "(" ")" Block;
+// FuncType    ::= "int";
+// 
+// Block       ::= "{" Stmt "}";
+// Stmt        ::= "return" Exp ";";
+// 
+// Exp         ::= UnaryExp;
+// PrimaryExp  ::= "(" Exp ")" | Number;
+// Number      ::= INT_CONST;
+// UnaryExp    ::= PrimaryExp | UnaryOp UnaryExp;
+// UnaryOp     ::= "+" | "-" | "!";
+
 // 定义 parser 函数和错误处理函数的附加参数
 %parse-param { std::unique_ptr<BaseAST> &ast }
 
@@ -23,15 +37,16 @@ void yyerror(std::unique_ptr<BaseAST> &ast, const char *s);
   std::string *str_val;
   int int_val;
   BaseAST *ast_val;
+  UnaryOpType unary_op_type;
 }
 
 // lexer 返回的所有 token 种类的声明
 %token INT RETURN
-%token <str_val> IDENT
+%token <str_val> IDENT UNARY_OP
 %token <int_val> INT_CONST
 
 // 非终结符的类型定义
-%type <ast_val> FuncDef FuncType Block Stmt Number
+%type <ast_val> FuncDef FuncType Block Stmt Exp PrimaryExp Number UnaryExp UnaryOp
 
 %%
 
@@ -65,9 +80,27 @@ Block
   ;
 
 Stmt
-  : RETURN Number ';' {
-    auto number = std::unique_ptr<BaseAST>($2);
-    $$ = new StmtAST(number);
+  : RETURN Exp ';' {
+    auto exp = std::unique_ptr<BaseAST>($2);
+    $$ = new StmtAST(exp);
+  }
+  ;
+
+Exp
+  : UnaryExp {
+    auto unary_exp = std::unique_ptr<BaseAST>($1);
+    $$ = new ExpAST(unary_exp);
+  }
+  ;
+
+PrimaryExp
+  : '(' Exp ')' {
+    auto exp = std::unique_ptr<BaseAST>($2);
+    $$ = PrimaryExpAST::MakePrimaryFromExp(exp);
+  } 
+  | Number {
+    auto number = std::unique_ptr<BaseAST>($1);
+    $$ = PrimaryExpAST::MakePrimaryFromNumber(number);
   }
   ;
 
@@ -76,6 +109,23 @@ Number
     $$ = new NumberAST($1);
   }
   ;
+
+UnaryExp
+  : PrimaryExp {
+    auto primary_exp = std::unique_ptr<BaseAST>($1);
+    $$ = UnaryExpAST::MakeUnaryFromPrimary(primary_exp);
+  }
+  | UnaryOp UnaryExp {
+    auto unary_op = std::unique_ptr<BaseAST>($1);
+    auto unary_exp = std::unique_ptr<BaseAST>($2);
+    $$ = UnaryExpAST::MakeUnaryFromUnary(unary_op, unary_exp);
+  }
+
+UnaryOp 
+  : UNARY_OP {
+    auto op = std::unique_ptr<std::string>($1);
+    $$ = new UnaryOpAST(*op);
+  }
 
 %%
 

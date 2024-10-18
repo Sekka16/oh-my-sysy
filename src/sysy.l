@@ -15,6 +15,22 @@ using namespace std;
 
 %}
 
+/* 
+CompUnit    ::= FuncDef;
+
+FuncDef     ::= FuncType IDENT "(" ")" Block;
+FuncType    ::= "int";
+
+Block       ::= "{" Stmt "}";
+Stmt        ::= "return" Exp ";";
+
+Exp         ::= UnaryExp;
+PrimaryExp  ::= "(" Exp ")" | Number;
+Number      ::= INT_CONST;
+UnaryExp    ::= PrimaryExp | UnaryOp UnaryExp;
+UnaryOp     ::= "+" | "-" | "!";
+*/
+
 /* 空白符和注释 */
 WhiteSpace          [ \t\n\r]*
 SingleLineComment   "//".*
@@ -27,6 +43,9 @@ Identifier    [a-zA-Z_][a-zA-Z0-9_]*
 Decimal       [1-9][0-9]*
 Octal         0[0-7]*
 Hexadecimal   0[xX][0-9a-fA-F]+
+
+/* 一元运算符 */
+UnaryOp       [!+-]
 
 %%
 
@@ -42,6 +61,8 @@ Hexadecimal   0[xX][0-9a-fA-F]+
 {Decimal}       { yylval.int_val = strtol(yytext, nullptr, 0); return INT_CONST; }
 {Octal}         { yylval.int_val = strtol(yytext, nullptr, 0); return INT_CONST; }
 {Hexadecimal}   { yylval.int_val = strtol(yytext, nullptr, 0); return INT_CONST; }
+
+{UnaryOp}       { yylval.str_val = new string(yytext); return UNARY_OP; }
 
 .               { return yytext[0]; }
 

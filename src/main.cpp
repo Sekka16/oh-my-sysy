@@ -39,28 +39,31 @@ int main(int argc, const char *argv[]) {
   auto ast_ret = yyparse(ast);
   assert(!ast_ret);
 
+  // ast->Dump();
+
   std::string koopairString = ast->KoopaIR();
-
-  if (std::string(mode) == "-koopa") {
-    outputfile << koopairString;
-  } else if (std::string(mode) == "-riscv") {
-    koopa_program_t program;
-    koopa_error_code_t ret =
-        koopa_parse_from_string(koopairString.c_str(), &program);
-    assert(ret == KOOPA_EC_SUCCESS);
-    koopa_raw_program_builder_t builder = koopa_new_raw_program_builder();
-    koopa_raw_program_t raw = koopa_build_raw_program(builder, program);
-
-    std::string riscvASM = Visit(raw);
-    outputfile << riscvASM;
-
-    koopa_delete_program(program);
-    koopa_delete_raw_program_builder(builder);
-
-  } else {
-    std::cerr << "Unknown mode: " << mode << std::endl;
-    return 1;
-  }
+  std::cout << koopairString;
+  //
+  // if (std::string(mode) == "-koopa") {
+  //   outputfile << koopairString;
+  // } else if (std::string(mode) == "-riscv") {
+  //   koopa_program_t program;
+  //   koopa_error_code_t ret =
+  //       koopa_parse_from_string(koopairString.c_str(), &program);
+  //   assert(ret == KOOPA_EC_SUCCESS);
+  //   koopa_raw_program_builder_t builder = koopa_new_raw_program_builder();
+  //   koopa_raw_program_t raw = koopa_build_raw_program(builder, program);
+  //
+  //   std::string riscvASM = Visit(raw);
+  //   outputfile << riscvASM;
+  //
+  //   koopa_delete_program(program);
+  //   koopa_delete_raw_program_builder(builder);
+  //
+  // } else {
+  //   std::cerr << "Unknown mode: " << mode << std::endl;
+  //   return 1;
+  // }
 
   // 关闭文件
   fclose(yyin);
