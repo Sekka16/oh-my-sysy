@@ -2,6 +2,21 @@
 #include <iostream>
 #include <koopa.h>
 
+void CompUnitIR::to_koopa(std::string &str, const int tabs) const {
+  func_def->to_koopa(str);
+}
+
+void FuncDefIR::to_koopa(std::string &str, const int tabs) const {
+  str += "fun @" + ident + "(): " + to_string(func_type) + " {";
+  block->to_koopa(str);
+  str += "\n}";
+}
+
+void BasicBlockIR::to_koopa(std::string &str, const int tabs) const {
+  str += "%entry: \n";
+  stmt->to_koopa(str, tabs + 1);
+}
+
 // 访问 raw program
 std::string Visit(const koopa_raw_program_t &program) {
   std::string result = "\t.text\n";
