@@ -1,9 +1,24 @@
 #pragma once
+#include "ast.hpp"
 #include "ir_utils.hpp"
 #include "koopa.h"
 #include <cassert>
 #include <memory>
 #include <string>
+
+// CompUnit    ::= FuncDef;
+//
+// FuncDef     ::= FuncType IDENT "(" ")" Block;
+// FuncType    ::= "int";
+//
+// Block       ::= "{" Stmt "}";
+// Stmt        ::= "return" Exp ";";
+//
+// Exp         ::= UnaryExp;
+// PrimaryExp  ::= "(" Exp ")" | Number;
+// Number      ::= INT_CONST;
+// UnaryExp    ::= PrimaryExp | UnaryOp UnaryExp;
+// UnaryOp     ::= "+" | "-" | "!";
 
 class BaseIR {
 public:
@@ -21,7 +36,7 @@ public:
 
 class FuncDefIR : public BaseIR {
 public:
-  FUNC_TYPE func_type;
+  FUNC_KIND func_type;
   std::string ident;
   std::unique_ptr<BaseIR> block;
 
@@ -40,6 +55,32 @@ public:
   std::unique_ptr<BaseIR> exp;
 
   void to_koopa(std::string &str, const int tabs = 0) const override;
+};
+
+class ExpIR : public BaseIR {
+public:
+  std::unique_ptr<BaseIR> unary_exp;
+
+  void to_koopa(std::string &str, const int tabs = 0) const override;
+};
+
+class UnaryExpIR : public BaseIR {
+public:
+  std::unique_ptr<BaseIR> primary_exp;
+
+  void to_koopa(std::string &str, const int tabs = 0) const override;
+};
+
+class ValueIR : public BaseIR {
+public:
+  void to_koopa(std::string &str, const int tabs = 0) const override;
+};
+
+class PrimaryExpIR : public BaseIR {
+public:
+  std::unique_ptr<BaseIR> exp;
+
+  ValueIR value;
 };
 
 std::string Visit(const koopa_raw_program_t &program);

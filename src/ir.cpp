@@ -1,6 +1,6 @@
 #include "ir.hpp"
+#include "koopa.h"
 #include <iostream>
-#include <koopa.h>
 
 void CompUnitIR::to_koopa(std::string &str, const int tabs) const {
   func_def->to_koopa(str);
