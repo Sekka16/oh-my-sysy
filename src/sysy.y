@@ -96,11 +96,11 @@ Exp
 PrimaryExp
   : '(' Exp ')' {
     auto exp = std::unique_ptr<BaseAST>($2);
-    $$ = PrimaryExpAST::MakePrimaryFromExp(exp);
+    $$ = PrimaryExpAST::CreateExpAST(exp);
   } 
   | Number {
     auto number = std::unique_ptr<BaseAST>($1);
-    $$ = PrimaryExpAST::MakePrimaryFromNumber(number);
+    $$ = PrimaryExpAST::CreateNumberAST(number);
   }
   ;
 
@@ -113,12 +113,12 @@ Number
 UnaryExp
   : PrimaryExp {
     auto primary_exp = std::unique_ptr<BaseAST>($1);
-    $$ = UnaryExpAST::MakeUnaryFromPrimary(primary_exp);
+    $$ = UnaryExpAST::CreatePrimaryAST(primary_exp);
   }
   | UnaryOp UnaryExp {
     auto unary_op = std::unique_ptr<BaseAST>($1);
     auto unary_exp = std::unique_ptr<BaseAST>($2);
-    $$ = UnaryExpAST::MakeUnaryFromUnary(unary_op, unary_exp);
+    $$ = UnaryExpAST::CreateUnaryAST(unary_op, unary_exp);
   }
 
 UnaryOp 

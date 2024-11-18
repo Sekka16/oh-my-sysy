@@ -72,15 +72,14 @@ std::string ExpAST::KoopaIR() const {
   return result;
 }
 
-PrimaryExpAST *
-PrimaryExpAST::MakePrimaryFromExp(std::unique_ptr<BaseAST> &exp) {
+PrimaryExpAST *PrimaryExpAST::CreateExpAST(std::unique_ptr<BaseAST> &exp) {
   auto node = new PrimaryExpAST(Kind::EXP);
   node->exp = std::move(exp);
   return node;
 }
 
 PrimaryExpAST *
-PrimaryExpAST::MakePrimaryFromNumber(std::unique_ptr<BaseAST> &number) {
+PrimaryExpAST::CreateNumberAST(std::unique_ptr<BaseAST> &number) {
   auto node = new PrimaryExpAST(Kind::NUMBER);
   node->number = std::move(number);
   return node;
@@ -109,15 +108,14 @@ void NumberAST::Dump(int indent) const {
 std::string NumberAST::KoopaIR() const { return std::to_string(val); }
 
 UnaryExpAST *
-UnaryExpAST::MakeUnaryFromPrimary(std::unique_ptr<BaseAST> &primary_exp) {
+UnaryExpAST::MakeFromPrimary(std::unique_ptr<BaseAST> &primary_exp) {
   auto node = new UnaryExpAST(Kind::PRIMARY_EXP);
   node->primary_exp = std::move(primary_exp);
   return node;
 }
 
-UnaryExpAST *
-UnaryExpAST::MakeUnaryFromUnary(std::unique_ptr<BaseAST> &unary_op,
-                                std::unique_ptr<BaseAST> &unary_exp) {
+UnaryExpAST *UnaryExpAST::CreateUnaryAST(std::unique_ptr<BaseAST> &unary_op,
+                                         std::unique_ptr<BaseAST> &unary_exp) {
   auto node = new UnaryExpAST(Kind::UNARY_EXP);
   node->unary_op = std::move(unary_op);
   node->unary_exp = std::move(unary_exp);

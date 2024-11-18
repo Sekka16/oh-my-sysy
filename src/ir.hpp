@@ -71,16 +71,21 @@ public:
   void to_koopa(std::string &str, const int tabs = 0) const override;
 };
 
-class ValueIR : public BaseIR {
+class NumberIR : public BaseIR {
 public:
   void to_koopa(std::string &str, const int tabs = 0) const override;
 };
 
 class PrimaryExpIR : public BaseIR {
 public:
-  std::unique_ptr<BaseIR> exp;
+  enum class PrimaryExpType { ParenExp, NumberExp };
 
-  ValueIR value;
+  PrimaryExpType type; // 表示当前的推导类型
+  std::unique_ptr<BaseIR> exp;
+  std::unique_ptr<BaseIR> number;
+
+  static std::unique_ptr<BaseIR> CreateExpIR(std::unique_ptr<BaseIR> exp);
+  static std::unique_ptr<BaseIR> CreateNumberIR(std::unique_ptr<BaseIR> number);
 };
 
 std::string Visit(const koopa_raw_program_t &program);

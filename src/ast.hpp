@@ -116,9 +116,9 @@ public:
 
   PrimaryExpAST(Kind kind) : kind(kind) {}
 
-  static PrimaryExpAST *MakePrimaryFromExp(std::unique_ptr<BaseAST> &exp);
+  static PrimaryExpAST *CreateExpAST(std::unique_ptr<BaseAST> &exp);
 
-  static PrimaryExpAST *MakePrimaryFromNumber(std::unique_ptr<BaseAST> &number);
+  static PrimaryExpAST *CreateNumberAST(std::unique_ptr<BaseAST> &number);
 
   void Dump(int indent = 0) const override;
 
@@ -150,11 +150,10 @@ public:
 
   UnaryExpAST(Kind kind) : kind(kind) {}
 
-  static UnaryExpAST *
-  MakeUnaryFromPrimary(std::unique_ptr<BaseAST> &primary_exp);
+  static UnaryExpAST *CreatePrimaryAST(std::unique_ptr<BaseAST> &primary_exp);
 
-  static UnaryExpAST *MakeUnaryFromUnary(std::unique_ptr<BaseAST> &unary_op,
-                                         std::unique_ptr<BaseAST> &unary_exp);
+  static UnaryExpAST *CreateUnaryAST(std::unique_ptr<BaseAST> &unary_op,
+                                     std::unique_ptr<BaseAST> &unary_exp);
 
   void Dump(int indent = 0) const override;
 
