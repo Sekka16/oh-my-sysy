@@ -39,10 +39,10 @@ int main(int argc, const char *argv[]) {
   auto ast_ret = yyparse(ast);
   assert(!ast_ret);
 
-  // ast->Dump();
+  ast->Dump();
 
-  std::string koopairString = ast->KoopaIR();
-  std::cout << koopairString;
+  // std::string koopairString = ast->KoopaIR();
+  // std::cout << koopairString;
   //
   // if (std::string(mode) == "-koopa") {
   //   outputfile << koopairString;

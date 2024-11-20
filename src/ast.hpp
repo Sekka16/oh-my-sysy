@@ -114,11 +114,13 @@ public:
   std::unique_ptr<BaseAST> exp;
   std::unique_ptr<BaseAST> number;
 
-  PrimaryExpAST(Kind kind) : kind(kind) {}
+  explicit PrimaryExpAST(Kind kind) : kind(kind) {}
 
-  static PrimaryExpAST *CreateExpAST(std::unique_ptr<BaseAST> &exp);
+  static std::unique_ptr<PrimaryExpAST>
+  CreateExpAST(std::unique_ptr<BaseAST> &exp);
 
-  static PrimaryExpAST *CreateNumberAST(std::unique_ptr<BaseAST> &number);
+  static std::unique_ptr<PrimaryExpAST>
+  CreateNumberAST(std::unique_ptr<BaseAST> &number);
 
   void Dump(int indent = 0) const override;
 
@@ -148,12 +150,14 @@ public:
   std::unique_ptr<BaseAST> unary_op;
   std::unique_ptr<BaseAST> unary_exp;
 
-  UnaryExpAST(Kind kind) : kind(kind) {}
+  explicit UnaryExpAST(Kind kind) : kind(kind) {}
 
-  static UnaryExpAST *CreatePrimaryAST(std::unique_ptr<BaseAST> &primary_exp);
+  static std::unique_ptr<UnaryExpAST>
+  CreatePrimaryAST(std::unique_ptr<BaseAST> &primary_exp);
 
-  static UnaryExpAST *CreateUnaryAST(std::unique_ptr<BaseAST> &unary_op,
-                                     std::unique_ptr<BaseAST> &unary_exp);
+  static std::unique_ptr<UnaryExpAST>
+  CreateUnaryAST(std::unique_ptr<BaseAST> &unary_op,
+                 std::unique_ptr<BaseAST> &unary_exp);
 
   void Dump(int indent = 0) const override;
 
