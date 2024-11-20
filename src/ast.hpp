@@ -27,7 +27,6 @@ class BaseAST {
 public:
   virtual ~BaseAST() = default;
   virtual void Dump(int indent = 0) const = 0;
-  virtual std::string KoopaIR() const = 0;
 };
 
 class CompUnitAST : public BaseAST {
@@ -38,8 +37,6 @@ public:
       : func_def(std::move(func_def)) {}
 
   void Dump(int indent = 0) const override;
-
-  std::string KoopaIR() const override;
 };
 
 class FuncDefAST : public BaseAST {
@@ -54,8 +51,6 @@ public:
   }
 
   void Dump(int indent = 0) const override;
-
-  std::string KoopaIR() const override;
 };
 
 class FuncTypeAST : public BaseAST {
@@ -65,8 +60,6 @@ public:
   FuncTypeAST(std::string type) : type(type) {}
 
   void Dump(int indent = 0) const override;
-
-  std::string KoopaIR() const override;
 };
 
 class BlockAST : public BaseAST {
@@ -76,8 +69,6 @@ public:
   BlockAST(std::unique_ptr<BaseAST> &stmt) : stmt(std::move(stmt)) {}
 
   void Dump(int indent = 0) const override;
-
-  std::string KoopaIR() const override;
 };
 
 class StmtAST : public BaseAST {
@@ -87,8 +78,6 @@ public:
   StmtAST(std::unique_ptr<BaseAST> &exp) : exp(std::move(exp)) {}
 
   void Dump(int indent = 0) const override;
-
-  std::string KoopaIR() const override;
 };
 
 class ExpAST : public BaseAST {
@@ -99,8 +88,6 @@ public:
       : unary_exp(std::move(unary_exp)) {}
 
   void Dump(int ident = 0) const override;
-
-  std::string KoopaIR() const override;
 };
 
 class PrimaryExpAST : public BaseAST {
@@ -123,8 +110,6 @@ public:
   CreateNumberAST(std::unique_ptr<BaseAST> &number);
 
   void Dump(int indent = 0) const override;
-
-  std::string KoopaIR() const override;
 };
 
 class NumberAST : public BaseAST {
@@ -134,8 +119,6 @@ public:
   NumberAST(int val) : val(val) {}
 
   void Dump(int indent = 0) const override;
-
-  std::string KoopaIR() const override;
 };
 
 class UnaryExpAST : public BaseAST {
@@ -160,8 +143,6 @@ public:
                  std::unique_ptr<BaseAST> &unary_exp);
 
   void Dump(int indent = 0) const override;
-
-  std::string KoopaIR() const override;
 };
 
 class UnaryOpAST : public BaseAST {
@@ -172,6 +153,4 @@ public:
   UnaryOpAST(std::string op);
 
   void Dump(int indent = 0) const override;
-
-  std::string KoopaIR() const override;
 };

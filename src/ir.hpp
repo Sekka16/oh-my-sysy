@@ -45,47 +45,9 @@ public:
 
 class BasicBlockIR : public BaseIR {
 public:
-  std::unique_ptr<BaseIR> stmt;
+  std::vector<std::unique_ptr<BaseIR>> insts;
 
   void to_koopa(std::string &str, const int tabs = 0) const override;
-};
-
-class StmtIR : public BaseIR {
-public:
-  std::unique_ptr<BaseIR> exp;
-
-  void to_koopa(std::string &str, const int tabs = 0) const override;
-};
-
-class ExpIR : public BaseIR {
-public:
-  std::unique_ptr<BaseIR> unary_exp;
-
-  void to_koopa(std::string &str, const int tabs = 0) const override;
-};
-
-class UnaryExpIR : public BaseIR {
-public:
-  std::unique_ptr<BaseIR> primary_exp;
-
-  void to_koopa(std::string &str, const int tabs = 0) const override;
-};
-
-class NumberIR : public BaseIR {
-public:
-  void to_koopa(std::string &str, const int tabs = 0) const override;
-};
-
-class PrimaryExpIR : public BaseIR {
-public:
-  enum class PrimaryExpType { ParenExp, NumberExp };
-
-  PrimaryExpType type; // 表示当前的推导类型
-  std::unique_ptr<BaseIR> exp;
-  std::unique_ptr<BaseIR> number;
-
-  static std::unique_ptr<BaseIR> CreateExpIR(std::unique_ptr<BaseIR> exp);
-  static std::unique_ptr<BaseIR> CreateNumberIR(std::unique_ptr<BaseIR> number);
 };
 
 std::string Visit(const koopa_raw_program_t &program);
