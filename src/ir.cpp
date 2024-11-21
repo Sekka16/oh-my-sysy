@@ -2,35 +2,37 @@
 #include "ir_utils.hpp"
 #include "koopa.h"
 #include <memory>
+#include <string>
 
-var CompUnitIR::to_koopa(std::string &str, const int tabs) const {
+void CompUnitIR::to_koopa(std::string &str, const int tabs) const {
   func_def->to_koopa(str);
-  return "";
 }
 
-var FuncDefIR::to_koopa(std::string &str, const int tabs) const {
+void FuncDefIR::to_koopa(std::string &str, const int tabs) const {
   str += "fun @" + ident + "(): " + to_string(func_type) + " {";
   block->to_koopa(str);
   str += "}";
 }
 
-var BasicBlockIR::to_koopa(std::string &str, const int tabs) const {
+void BasicBlockIR::to_koopa(std::string &str, const int tabs) const {
   str += "%entry: \n";
   for (const auto &inst : insts) {
     inst->to_koopa(str, tabs + 1);
   }
 }
 
-var ValueIR::to_koopa(std::string &str, const int tabs) const {
+void ValueIR::to_koopa(std::string &str, const int tabs) const {
   switch (kind) {
   case VALUE_KIND::RET:
     value->to_koopa(str);
     str += "\nret ";
     break;
   case VALUE_KIND::INTEGER:
+    const_cast<ValueIR *>(this)->name = "tmp";
     value->to_koopa(str);
     break;
   case VALUE_KIND::UNARY:
+
     value->to_koopa(str);
     break;
   default:
@@ -38,6 +40,9 @@ var ValueIR::to_koopa(std::string &str, const int tabs) const {
   }
 }
 
+void IntergerIR::to_koopa(std::string &str, const int) const {
+  str += std::to_string(num);
+}
 // 访问 raw program
 std::string Visit(const koopa_raw_program_t &program) {
   std::string result = "\t.text\n";
