@@ -1,10 +1,10 @@
 #include "ir_utils.hpp"
 
-std::string to_string(FUNC_KIND func_type) {
+std::string to_string(TYPE_KIND func_type) {
   switch (func_type) {
-  case FUNC_KIND::INT:
+  case TYPE_KIND::INT32:
     return "i32";
-  case FUNC_KIND::VOID:
+  case TYPE_KIND::UNIT:
     return "void";
   default:
     return "Unknown";

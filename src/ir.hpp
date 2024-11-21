@@ -23,7 +23,7 @@
 class BaseIR {
 public:
   virtual ~BaseIR() = default;
-  virtual void to_koopa(std::string &str, const int tabs = 0) const = 0;
+  virtual var to_koopa(std::string &str, const int tabs = 0) const = 0;
   // virtual void to_riscv(std::string &str, const int tabs = 0) const = 0;
 };
 
@@ -31,23 +31,53 @@ class CompUnitIR : public BaseIR {
 public:
   std::unique_ptr<BaseIR> func_def;
 
-  void to_koopa(std::string &str, const int tabs = 0) const override;
+  var to_koopa(std::string &str, const int tabs = 0) const override;
 };
 
 class FuncDefIR : public BaseIR {
 public:
-  FUNC_KIND func_type;
+  TYPE_KIND func_type;
   std::string ident;
   std::unique_ptr<BaseIR> block;
 
-  void to_koopa(std::string &str, const int tabs = 0) const override;
+  var to_koopa(std::string &str, const int tabs = 0) const override;
 };
 
 class BasicBlockIR : public BaseIR {
 public:
   std::vector<std::unique_ptr<BaseIR>> insts;
 
-  void to_koopa(std::string &str, const int tabs = 0) const override;
+  var to_koopa(std::string &str, const int tabs = 0) const override;
+};
+
+class ValueIR : public BaseIR {
+public:
+  VALUE_KIND kind;
+  std::unique_ptr<BaseIR> value;
+
+  var to_koopa(std::string &str, const int tabs = 0) const override;
+};
+
+class RetIR : public BaseIR {
+public:
+  std::unique_ptr<BaseIR> value;
+
+  var to_koopa(std::string &str, const int tabs = 0) const override;
+};
+
+class IntergerIR : public BaseIR {
+public:
+  int num;
+
+  var to_koopa(std::string &str, const int tabs = 0) const override;
+};
+
+class UnaryIR : public BaseIR {
+public:
+  UNARY_OP op;
+  std::unique_ptr<BaseIR> value; // pointer to a num
+
+  var to_koopa(std::string &str, const int tabs = 0) const override;
 };
 
 std::string Visit(const koopa_raw_program_t &program);

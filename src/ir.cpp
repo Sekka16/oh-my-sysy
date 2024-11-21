@@ -1,20 +1,41 @@
 #include "ir.hpp"
+#include "ir_utils.hpp"
 #include "koopa.h"
-#include <iostream>
+#include <memory>
 
-void CompUnitIR::to_koopa(std::string &str, const int tabs) const {
+var CompUnitIR::to_koopa(std::string &str, const int tabs) const {
   func_def->to_koopa(str);
+  return "";
 }
 
-void FuncDefIR::to_koopa(std::string &str, const int tabs) const {
+var FuncDefIR::to_koopa(std::string &str, const int tabs) const {
   str += "fun @" + ident + "(): " + to_string(func_type) + " {";
   block->to_koopa(str);
-  str += "\n}";
+  str += "}";
 }
 
-void BasicBlockIR::to_koopa(std::string &str, const int tabs) const {
+var BasicBlockIR::to_koopa(std::string &str, const int tabs) const {
   str += "%entry: \n";
-  stmt->to_koopa(str, tabs + 1);
+  for (const auto &inst : insts) {
+    inst->to_koopa(str, tabs + 1);
+  }
+}
+
+var ValueIR::to_koopa(std::string &str, const int tabs) const {
+  switch (kind) {
+  case VALUE_KIND::RET:
+    value->to_koopa(str);
+    str += "\nret ";
+    break;
+  case VALUE_KIND::INTEGER:
+    value->to_koopa(str);
+    break;
+  case VALUE_KIND::UNARY:
+    value->to_koopa(str);
+    break;
+  default:
+    assert(false && "Unkown value kind!");
+  }
 }
 
 // 访问 raw program

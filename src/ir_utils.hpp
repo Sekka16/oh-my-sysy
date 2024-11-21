@@ -1,9 +1,23 @@
 #pragma once
 #include <string>
 
-enum class FUNC_KIND {
-  INT,
-  VOID,
+using var = std::string;
+
+enum class TYPE_KIND {
+  INT32,
+  UNIT,
 };
 
-std::string to_string(FUNC_KIND func_type);
+enum class VALUE_KIND {
+  RET,
+  INTEGER,
+  UNARY,
+};
+
+enum class UNARY_OP {
+  POS,
+  NEG,
+  NOT,
+};
+
+std::string to_string(TYPE_KIND func_type);
